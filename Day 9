@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <string.h>
+
+// Recursive function to print the string in mirror format
+void mirrorString(char str[], int index, int length) {
+    // Base Case: if the index reaches the end of the string, stop
+    if (index == length) {
+        return;
+    }
+
+    // Recursive Step: First, "mirror" the rest of the string
+    mirrorString(str, index + 1, length);
+
+    // After the recursive calls return, print the current character
+    // This prints characters from the end back to the beginning
+    printf("%c", str[index]);
+}
+
+int main() {
+    char str[100];
+
+    // Read the input string
+    if (scanf("%s", str) != 1) return 0;
+
+    int length = strlen(str);
+
+    // Call the recursive function starting from the first character
+    mirrorString(str, 0, length);
+    printf("\n");
+
+    return 0;
+}
