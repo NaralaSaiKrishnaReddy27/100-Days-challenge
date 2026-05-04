@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define INF INT_MAX
+
+struct Edge {
+    int dest, weight;
+    struct Edge* next;
+};
+
+typedef struct {
+    int v, key;
+} HeapNode;
+
+typedef struct {
+    HeapNode* data;
+    int size;
+} MinHeap;
+
+void swap(HeapNode* a, HeapNode* b) {
+    HeapNode temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void heapify(MinHeap* hp, int i) {
+    int smallest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+    if (left < hp->size && hp->data[left].key < hp->data[smallest].key) smallest = left;
+    if (right < hp->size && hp->data[right].key < hp->data[smallest].key) smallest = right;
+    if (smallest != i) {
+        swap(&hp->data[i], &hp->data[smallest]);
+        heapify(hp, smallest);
+    }
+}
+
+void push(MinHeap* hp, int v, int key) {
+    int i = hp->size++;
+    hp->data[i].v = v;
+    hp->data[i].key = key;
+    while (i != 0 && hp->data[(i - 1) / 2].key > hp->data[i].key) {
+        swap(&hp->data[i], &hp->data[(i - 1) / 2]);
+        i = (i - 1) / 2;
+    }
+}
+
+HeapNode pop(MinHeap* hp) {
+    HeapNode root = hp->data[0];
+    hp->data[0] = hp->data[--hp->size];
+    heapify(hp, 0);
+    return root;
+}
+
+void addEdge(struct Edge* adj[], int u, int v, int w) {
+    struct Edge* newNode = (struct Edge*)malloc(sizeof(struct Edge));
+    newNode->dest = v;
+    newNode->weight = w;
+    newNode->next = adj[u];
+    adj[u] = newNode;
+}
+
+int primMST(struct Edge* adj[], int n) {
+    int* key = (int*)malloc((n + 1) * sizeof(int));
+    int* inMST = (int*)calloc((n + 1), sizeof(int));
+    for (int i = 0; i <= n; i++) key[i] = INF;
+
+    MinHeap hp;
+    hp.data = (HeapNode*)malloc((n * n) * sizeof(HeapNode));
+    hp.size = 0;
+
+    int totalWeight = 0;
+    key[1] = 0; // Starting from vertex 1
+    push(&hp, 1, 0);
+
+    while (hp.size > 0) {
+        HeapNode top = pop(&hp);
+        int u = top.v;
+
+        if (inMST[u]) continue;
+
+        inMST[u] = 1;
+        totalWeight += top.key;
+
+        struct Edge* edge = adj[u];
+        while (edge != NULL) {
+            int v = edge->dest;
+            int w = edge->weight;
+            if (!inMST[v] && w < key[v]) {
+                key[v] = w;
+                push(&hp, v, key[v]);
+            }
+            edge = edge->next;
+        }
+    }
+    return totalWeight;
+}
+
+int main() {
+    int n, m;
+    if (scanf("%d %d", &n, &m) != 2) return 0;
+
+    struct Edge** adj = (struct Edge**)calloc(n + 1, sizeof(struct Edge*));
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        scanf("%d %d %d", &u, &v, &w);
+        addEdge(adj, u, v, w);
+        addEdge(adj, v, u, w);
+    }
+
+    printf("%d\n", primMST(adj, n));
+    return 0;
+}
