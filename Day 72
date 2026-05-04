@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <string.h>
+
+char findFirstRepeated(char* s) {
+    // Array to store the count of 26 lowercase characters
+    // Initialized to 0
+    int seen[26] = {0};
+
+    for (int i = 0; s[i] != '\0'; i++) {
+        int index = s[i] - 'a';
+
+        // If we have seen this character before, it is the first 
+        // character whose second occurrence we've encountered.
+        if (seen[index] > 0) {
+            return s[i];
+        }
+
+        // Mark character as seen
+        seen[index]++;
+    }
+
+    return '\0'; // Return null if no repeat found
+}
+
+int main() {
+    char s[100005];
+    if (scanf("%s", s) != 1) return 0;
+
+    char result = findFirstRepeated(s);
+
+    if (result == '\0') {
+        printf("-1\n");
+    } else {
+        printf("%c\n", result);
+    }
+
+    return 0;
+}
