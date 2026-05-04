@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+// Recursive function to calculate base^exp
+long long power(int base, int exp) {
+    // Base Case: any number to the power of 0 is 1
+    if (exp == 0) {
+        return 1;
+    }
+    
+    // Recursive Step: a^b = a * a^(b-1)
+    return base * power(base, exp - 1);
+}
+
+int main() {
+    int a, b;
+
+    // Read the base (a) and exponent (b)
+    if (scanf("%d %d", &a, &b) != 2) return 0;
+
+    // We use long long to handle larger results
+    printf("%lld\n", power(a, b));
+
+    return 0;
+}
