@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int dest;
+    struct Node* next;
+};
+
+// Function to add undirected edge
+void addEdge(struct Node* adj[], int u, int v) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->dest = v;
+    newNode->next = adj[u];
+    adj[u] = newNode;
+
+    newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->dest = u;
+    newNode->next = adj[v];
+    adj[v] = newNode;
+}
+
+// DFS function to detect cycle
+int isCyclicUtil(int u, struct Node* adj[], int visited[], int parent) {
+    visited[u] = 1;
+
+    struct Node* temp = adj[u];
+    while (temp != NULL) {
+        int v = temp->dest;
+
+        // If neighbor is not visited, recurse
+        if (!visited[v]) {
+            if (isCyclicUtil(v, adj, visited, u))
+                return 1;
+        }
+        // If neighbor is visited and not the parent, cycle found
+        else if (v != parent) {
+            return 1;
+        }
+        temp = temp->next;
+    }
+    return 0;
+}
+
+int main() {
+    int n, m;
+    if (scanf("%d %d", &n, &m) != 2) return 0;
+
+    struct Node** adj = (struct Node**)malloc(n * sizeof(struct Node*));
+    for (int i = 0; i < n; i++) adj[i] = NULL;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(adj, u, v);
+    }
+
+    int* visited = (int*)calloc(n, sizeof(int));
+    int hasCycle = 0;
+
+    // Check all components
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            if (isCyclicUtil(i, adj, visited, -1)) {
+                hasCycle = 1;
+                break;
+            }
+        }
+    }
+
+    if (hasCycle) printf("YES\n");
+    else printf("NO\n");
+
+    return 0;
+}
