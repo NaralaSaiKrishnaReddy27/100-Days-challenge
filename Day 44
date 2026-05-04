@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// --- Tree Construction Helpers ---
+struct Node* newNode(int val) {
+    if (val == -1) return NULL;
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Simple Queue for level-order construction
+struct Node** queue;
+int front, rear;
+
+void enqueue(struct Node* n) { if(n) queue[rear++] = n; }
+struct Node* dequeue() { return queue[front++]; }
+
+// --- Traversal Functions ---
+void printInorder(struct Node* root) {
+    if (!root) return;
+    printInorder(root->left);
+    printf("%d ", root->data);
+    printInorder(root->right);
+}
+
+void printPreorder(struct Node* root) {
+    if (!root) return;
+    printf("%d ", root->data);
+    printPreorder(root->left);
+    printPreorder(root->right);
+}
+
+void printPostorder(struct Node* root) {
+    if (!root) return;
+    printPostorder(root->left);
+    printPostorder(root->right);
+    printf("%d ", root->data);
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+
+    // Build the tree
+    queue = (struct Node**)malloc(n * sizeof(struct Node*));
+    front = rear = 0;
+
+    struct Node* root = newNode(arr[0]);
+    enqueue(root);
+
+    int i = 1;
+    while (i < n) {
+        struct Node* parent = dequeue();
+        parent->left = newNode(arr[i++]);
+        if (parent->left) enqueue(parent->left);
+        
+        if (i < n) {
+            parent->right = newNode(arr[i++]);
+            if (parent->right) enqueue(parent->right);
+        }
+    }
+
+    // Perform Traversals
+    printInorder(root);   printf("\n");
+    printPreorder(root);  printf("\n");
+    printPostorder(root); printf("\n");
+
+    return 0;
+}
