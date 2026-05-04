@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the Node structure for a Polynomial term
+struct Node {
+    int coeff;
+    int exp;
+    struct Node* next;
+};
+
+// Function to create a new term node
+struct Node* createNode(int c, int e) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->coeff = c;
+    newNode->exp = e;
+    newNode->next = NULL;
+    return newNode;
+}
+
+int main() {
+    int n, c, e;
+    struct Node *head = NULL, *tail = NULL;
+
+    // Read the number of terms
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    // Build the linked list of polynomial terms
+    for (int i = 0; i < n; i++) {
+        scanf("%d %d", &c, &e);
+        struct Node* newNode = createNode(c, e);
+
+        if (head == NULL) {
+            head = newNode;
+            tail = head;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+
+    // Traverse and print the polynomial
+    struct Node* temp = head;
+    while (temp != NULL) {
+        // Handle coefficient and variable printing
+        if (temp->exp == 0) {
+            printf("%d", temp->coeff);
+        } else if (temp->exp == 1) {
+            printf("%dx", temp->coeff);
+        } else {
+            printf("%dx^%d", temp->coeff, temp->exp);
+        }
+
+        // Handle the "+" sign between terms
+        if (temp->next != NULL) {
+            printf(" + ");
+        }
+
+        temp = temp->next;
+    }
+    printf("\n");
+
+    // Free memory
+    temp = head;
+    while (temp != NULL) {
+        struct Node* nextNode = temp->next;
+        free(temp);
+        temp = nextNode;
+    }
+
+    return 0;
+}
