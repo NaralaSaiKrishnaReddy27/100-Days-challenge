@@ -1,0 +1,37 @@
+#include <stdio.h>
+
+int main() {
+    int n, pos, x;
+
+    // Read the initial size of the array
+    if (scanf("%d", &n) != 1) return 0;
+
+    // Declare an array with enough space for n + 1 elements
+    int arr[n + 1];
+
+    // Read n elements into the array
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    // Read the 1-based position and the element to insert
+    scanf("%d", &pos);
+    scanf("%d", &x);
+
+    // Shift elements to the right starting from the end
+    // We move elements from index (pos-1) to (n-1) one position over
+    for (int i = n; i >= pos; i--) {
+        arr[i] = arr[i - 1];
+    }
+
+    // Insert the new element at the correct 0-based index
+    arr[pos - 1] = x;
+
+    // Print the updated array
+    for (int i = 0; i <= n; i++) {
+        printf("%d%s", arr[i], (i == n) ? "" : " ");
+    }
+    printf("\n");
+
+    return 0;
+}
