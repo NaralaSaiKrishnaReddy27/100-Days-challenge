@@ -1,0 +1,45 @@
+#include <stdio.h>
+
+int main() {
+    int m, n;
+
+    // Read rows (m) and columns (n)
+    if (scanf("%d %d", &m, &n) != 2) return 0;
+
+    // Declare two matrices and a result matrix
+    int mat1[m][n];
+    int mat2[m][n];
+    int sum[m][n];
+
+    // Read the first matrix
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &mat1[i][j]);
+        }
+    }
+
+    // Read the second matrix
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &mat2[i][j]);
+        }
+    }
+
+    // Perform matrix addition
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            sum[i][j] = mat1[i][j] + mat2[i][j];
+        }
+    }
+
+    // Print the resultant matrix
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            // Use spacing logic to avoid trailing space on each line
+            printf("%d%s", sum[i][j], (j == n - 1) ? "" : " ");
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
