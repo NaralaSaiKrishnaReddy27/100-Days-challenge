@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// Helper to create a new tree node
+struct Node* newNode(int val) {
+    if (val == -1) return NULL;
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Function to calculate the height of the tree
+int getHeight(struct Node* root) {
+    if (root == NULL) {
+        return 0; // Height of an empty tree is 0
+    }
+
+    int leftHeight = getHeight(root->left);
+    int rightHeight = getHeight(root->right);
+
+    // Return the larger height + 1 (for the current root)
+    return (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+
+    // Construct the tree using a queue
+    struct Node** queue = (struct Node**)malloc(n * sizeof(struct Node*));
+    int front = 0, rear = 0;
+
+    struct Node* root = newNode(arr[0]);
+    if (root) queue[rear++] = root;
+
+    int i = 1;
+    while (i < n && front < rear) {
+        struct Node* parent = queue[front++];
+        
+        // Left child
+        parent->left = newNode(arr[i++]);
+        if (parent->left) queue[rear++] = parent->left;
+        
+        // Right child
+        if (i < n) {
+            parent->right = newNode(arr[i++]);
+            if (parent->right) queue[rear++] = parent->right;
+        }
+    }
+
+    printf("%d\n", getHeight(root));
+
+    return 0;
+}
