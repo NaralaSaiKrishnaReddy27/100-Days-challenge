@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to check if the array represents a Min-Heap
+int isMinHeap(int arr[], int n) {
+    // A node at index i has children at 2*i + 1 and 2*i + 2
+    // We only need to check internal nodes
+    for (int i = 0; i <= (n / 2 - 1); i++) {
+        // Check if left child exists and is smaller than parent
+        if (2 * i + 1 < n && arr[i] > arr[2 * i + 1]) {
+            return 0;
+        }
+
+        // Check if right child exists and is smaller than parent
+        if (2 * i + 2 < n && arr[i] > arr[2 * i + 2]) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    // Logic: If any node is -1 (NULL) in a Min-Heap level-order 
+    // array before the end, it wouldn't be a complete tree.
+    // Assuming standard array-based heap input where -1 isn't expected 
+    // in the middle for a valid heap.
+    
+    if (isMinHeap(arr, n)) {
+        printf("YES\n");
+    } else {
+        printf("NO\n");
+    }
+
+    free(arr);
+    return 0;
+}
