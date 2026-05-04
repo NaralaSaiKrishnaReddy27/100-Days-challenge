@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 100
+
+char stack[MAX];
+int top = -1;
+
+void push(char item) {
+    stack[++top] = item;
+}
+
+char pop() {
+    return stack[top--];
+}
+
+// Function to return precedence of operators
+int precedence(char symbol) {
+    if (symbol == '^') return 3;
+    if (symbol == '*' || symbol == '/') return 2;
+    if (symbol == '+' || symbol == '-') return 1;
+    return 0;
+}
+
+int main() {
+    char infix[MAX], postfix[MAX];
+    int j = 0;
+
+    if (scanf("%s", infix) != 1) return 0;
+
+    for (int i = 0; infix[i] != '\0'; i++) {
+        char item = infix[i];
+
+        // If the character is an operand, add it to output
+        if (isalnum(item)) {
+            postfix[j++] = item;
+        }
+        // If left parenthesis, push to stack
+        else if (item == '(') {
+            push(item);
+        }
+        // If right parenthesis, pop until '(' is found
+        else if (item == ')') {
+            while (top != -1 && stack[top] != '(') {
+                postfix[j++] = pop();
+            }
+            pop(); // Remove '(' from stack
+        }
+        // If an operator is encountered
+        else {
+            while (top != -1 && precedence(stack[top]) >= precedence(item)) {
+                postfix[j++] = pop();
+            }
+            push(item);
+        }
+    }
+
+    // Pop all remaining operators from stack
+    while (top != -1) {
+        postfix[j++] = pop();
+    }
+    postfix[j] = '\0';
+
+    printf("%s\n", postfix);
+
+    return 0;
+}
