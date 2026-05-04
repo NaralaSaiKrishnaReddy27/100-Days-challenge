@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a node in the adjacency list
+struct AdjListNode {
+    int dest;
+    struct AdjListNode* next;
+};
+
+// Structure for the adjacency list (head pointer)
+struct AdjList {
+    struct AdjListNode* head;
+};
+
+// Function to create a new adjacency list node
+struct AdjListNode* createNode(int dest) {
+    struct AdjListNode* newNode = (struct AdjListNode*)malloc(sizeof(struct AdjListNode));
+    newNode->dest = dest;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to add an edge (Undirected)
+void addEdge(struct AdjList adj[], int u, int v) {
+    // Add edge from u to v
+    struct AdjListNode* newNode = createNode(v);
+    newNode->next = adj[u].head;
+    adj[u].head = newNode;
+
+    // Add edge from v to u (for Undirected Graph)
+    newNode = createNode(u);
+    newNode->next = adj[v].head;
+    adj[v].head = newNode;
+}
+
+int main() {
+    int n, m;
+    if (scanf("%d %d", &n, &m) != 2) return 0;
+
+    // Initialize adjacency list array
+    struct AdjList* adj = (struct AdjList*)malloc(n * sizeof(struct AdjList));
+    for (int i = 0; i < n; i++) {
+        adj[i].head = NULL;
+    }
+
+    // Input m edges
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        if (u < n && v < n) {
+            addEdge(adj, u, v);
+        }
+    }
+
+    // Output the adjacency list
+    for (int i = 0; i < n; i++) {
+        printf("Vertex %d: ", i);
+        struct AdjListNode* temp = adj[i].head;
+        while (temp) {
+            printf("-> %d ", temp->dest);
+            temp = temp->next;
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
