@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the Node structure for a Doubly Linked List
+struct Node {
+    int data;
+    struct Node* prev; // Pointer to the previous node
+    struct Node* next; // Pointer to the next node
+};
+
+// Function to create a new node
+struct Node* createNode(int val) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = val;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+int main() {
+    int n, val;
+    struct Node *head = NULL, *tail = NULL;
+
+    // Read the number of elements
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    // Insert nodes sequentially
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &val);
+        struct Node* newNode = createNode(val);
+
+        if (head == NULL) {
+            // First node becomes both head and tail
+            head = newNode;
+            tail = newNode;
+        } else {
+            // Link the current tail to the new node
+            tail->next = newNode;
+            // Link the new node back to the current tail
+            newNode->prev = tail;
+            // Move tail to the new node
+            tail = newNode;
+        }
+    }
+
+    // Forward Traversal
+    struct Node* temp = head;
+    while (temp != NULL) {
+        printf("%d%s", temp->data, (temp->next == NULL) ? "" : " ");
+        temp = temp->next;
+    }
+    printf("\n");
+
+    // Clean up memory
+    temp = head;
+    while (temp != NULL) {
+        struct Node* nextNode = temp->next;
+        free(temp);
+        temp = nextNode;
+    }
+
+    return 0;
+}
