@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+struct Node* newNode(int val) {
+    if (val == -1) return NULL;
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Function to print zigzag traversal
+void zigzagTraversal(struct Node* root, int n) {
+    if (!root) return;
+
+    struct Node** queue = (struct Node**)malloc(n * sizeof(struct Node*));
+    int front = 0, rear = 0;
+    int leftToRight = 1;
+
+    queue[rear++] = root;
+
+    while (front < rear) {
+        int levelSize = rear - front;
+        int* currentLevel = (int*)malloc(levelSize * sizeof(int));
+
+        for (int i = 0; i < levelSize; i++) {
+            struct Node* curr = queue[front++];
+            
+            // Store data based on current direction
+            if (leftToRight) {
+                currentLevel[i] = curr->data;
+            } else {
+                currentLevel[levelSize - 1 - i] = curr->data;
+            }
+
+            if (curr->left) queue[rear++] = curr->left;
+            if (curr->right) queue[rear++] = curr->right;
+        }
+
+        // Print the level
+        for (int i = 0; i < levelSize; i++) {
+            printf("%d ", currentLevel[i]);
+        }
+        
+        // Flip direction for next level
+        leftToRight = !leftToRight;
+        free(currentLevel);
+    }
+    printf("\n");
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+
+    // Build the tree
+    struct Node** q = (struct Node**)malloc(n * sizeof(struct Node*));
+    int f = 0, r = 0;
+    struct Node* root = newNode(arr[0]);
+    if (root) q[r++] = root;
+
+    int i = 1;
+    while (i < n && f < r) {
+        struct Node* curr = q[f++];
+        if (i < n) {
+            curr->left = newNode(arr[i++]);
+            if (curr->left) q[r++] = curr->left;
+        }
+        if (i < n) {
+            curr->right = newNode(arr[i++]);
+            if (curr->right) q[r++] = curr->right;
+        }
+    }
+
+    zigzagTraversal(root, n);
+
+    return 0;
+}
