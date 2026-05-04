@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// Structure to store node data with its HD and Level for sorting
+typedef struct {
+    int val;
+    int hd;
+    int level; // To maintain top-to-bottom order if HD is same
+} VerticalNode;
+
+struct Node* newNode(int val) {
+    if (val == -1) return NULL;
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Comparator for sorting nodes based on HD, then Level
+int compare(const void* a, const void* b) {
+    VerticalNode* nodeA = (VerticalNode*)a;
+    VerticalNode* nodeB = (VerticalNode*)b;
+    if (nodeA->hd != nodeB->hd)
+        return nodeA->hd - nodeB->hd;
+    return nodeA->level - nodeB->level;
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+
+    // 1. Build the Tree
+    struct Node** q = (struct Node**)malloc(n * sizeof(struct Node*));
+    int f = 0, r = 0;
+    struct Node* root = newNode(arr[0]);
+    if (root) q[r++] = root;
+
+    int i = 1;
+    while (i < n && f < r) {
+        struct Node* curr = q[f++];
+        if (i < n) {
+            curr->left = newNode(arr[i++]);
+            if (curr->left) q[r++] = curr->left;
+        }
+        if (i < n) {
+            curr->right = newNode(arr[i++]);
+            if (curr->right) q[r++] = curr->right;
+        }
+    }
+
+    // 2. BFS to assign HD and Level
+    VerticalNode* vNodes = (VerticalNode*)malloc(n * sizeof(VerticalNode));
+    int vCount = 0;
+
+    struct Node* nodeQ[n];
+    int hdQ[n], levelQ[n];
+    int front = 0, rear = 0;
+
+    if (root) {
+        nodeQ[rear] = root;
+        hdQ[rear] = 0;
+        levelQ[rear] = 0;
+        rear++;
+    }
+
+    while (front < rear) {
+        struct Node* curr = nodeQ[front];
+        int currHD = hdQ[front];
+        int currLvl = levelQ[front];
+        front++;
+
+        vNodes[vCount].val = curr->data;
+        vNodes[vCount].hd = currHD;
+        vNodes[vCount].level = currLvl;
+        vCount++;
+
+        if (curr->left) {
+            nodeQ[rear] = curr->left;
+            hdQ[rear] = currHD - 1;
+            levelQ[rear] = currLvl + 1;
+            rear++;
+        }
+        if (curr->right) {
+            nodeQ[rear] = curr->right;
+            hdQ[rear] = currHD + 1;
+            levelQ[rear] = currLvl + 1;
+            rear++;
+        }
+    }
+
+    // 3. Sort based on HD
+    qsort(vNodes, vCount, sizeof(VerticalNode), compare);
+
+    // 4. Print column by column
+    for (int j = 0; j < vCount; j++) {
+        if (j > 0 && vNodes[j].hd != vNodes[j-1].hd) printf("\n");
+        printf("%d ", vNodes[j].val);
+    }
+    printf("\n");
+
+    return 0;
+}
