@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int dest;
+    struct Node* next;
+};
+
+// Standard Queue implementation for BFS
+struct Queue {
+    int *items;
+    int front, rear, size;
+};
+
+struct Queue* createQueue(int n) {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    q->items = (int*)malloc(n * sizeof(int));
+    q->front = 0;
+    q->rear = -1;
+    q->size = 0;
+    return q;
+}
+
+void enqueue(struct Queue* q, int value) {
+    q->items[++q->rear] = value;
+    q->size++;
+}
+
+int dequeue(struct Queue* q) {
+    q->size--;
+    return q->items[q->front++];
+}
+
+// Helper to add edges to Adjacency List
+void addEdge(struct Node* adj[], int u, int v) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->dest = v;
+    newNode->next = adj[u];
+    adj[u] = newNode;
+}
+
+void BFS(struct Node* adj[], int n, int s) {
+    int* visited = (int*)calloc(n, sizeof(int));
+    struct Queue* q = createQueue(n);
+
+    // Start with source
+    visited[s] = 1;
+    enqueue(q, s);
+
+    while (q->size > 0) {
+        int u = dequeue(q);
+        printf("%d ", u);
+
+        struct Node* temp = adj[u];
+        while (temp != NULL) {
+            int v = temp->dest;
+            if (!visited[v]) {
+                visited[v] = 1;
+                enqueue(q, v);
+            }
+            temp = temp->next;
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int n, m, s;
+    if (scanf("%d %d", &n, &m) != 2) return 0;
+
+    struct Node** adj = (struct Node**)malloc(n * sizeof(struct Node*));
+    for (int i = 0; i < n; i++) adj[i] = NULL;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(adj, u, v);
+        addEdge(adj, v, u); // Assuming undirected
+    }
+
+    scanf("%d", &s);
+    printf("BFS Traversal: ");
+    BFS(adj, n, s);
+
+    return 0;
+}
