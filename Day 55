@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// Helper to create a new tree node
+struct Node* newNode(int val) {
+    if (val == -1) return NULL;
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Function to print the Right View
+void printRightView(struct Node* root, int n) {
+    if (!root) return;
+
+    // Queue for BFS
+    struct Node** queue = (struct Node**)malloc(n * sizeof(struct Node*));
+    int front = 0, rear = 0;
+
+    queue[rear++] = root;
+
+    while (front < rear) {
+        // Number of nodes at the current level
+        int levelSize = rear - front;
+
+        for (int i = 0; i < levelSize; i++) {
+            struct Node* curr = queue[front++];
+
+            // If it is the last node of the current level, print it
+            if (i == levelSize - 1) {
+                printf("%d ", curr->data);
+            }
+
+            // Enqueue children for the next level
+            if (curr->left) queue[rear++] = curr->left;
+            if (curr->right) queue[rear++] = curr->right;
+        }
+    }
+    printf("\n");
+    free(queue);
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+
+    // Build the tree from Level-Order input
+    struct Node** buildQueue = (struct Node**)malloc(n * sizeof(struct Node*));
+    int bf = 0, br = 0;
+    
+    struct Node* root = newNode(arr[0]);
+    if (root) buildQueue[br++] = root;
+
+    int i = 1;
+    while (i < n && bf < br) {
+        struct Node* parent = buildQueue[bf++];
+        
+        parent->left = newNode(arr[i++]);
+        if (parent->left) buildQueue[br++] = parent->left;
+        
+        if (i < n) {
+            parent->right = newNode(arr[i++]);
+            if (parent->right) buildQueue[br++] = parent->right;
+        }
+    }
+
+    printRightView(root, n);
+
+    free(arr);
+    free(buildQueue);
+    return 0;
+}
