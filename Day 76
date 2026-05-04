@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int dest;
+    struct Node* next;
+};
+
+// Global visited array
+int visited[100005];
+
+// Standard DFS to mark all nodes in a component
+void DFS(struct Node* adj[], int u) {
+    visited[u] = 1;
+    struct Node* temp = adj[u];
+    while (temp != NULL) {
+        int v = temp->dest;
+        if (!visited[v]) {
+            DFS(adj, v);
+        }
+        temp = temp->next;
+    }
+}
+
+void addEdge(struct Node* adj[], int u, int v) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->dest = v;
+    newNode->next = adj[u];
+    adj[u] = newNode;
+}
+
+int main() {
+    int n, m;
+    if (scanf("%d %d", &n, &m) != 2) return 0;
+
+    // Adjacency List initialization
+    struct Node** adj = (struct Node**)malloc((n + 1) * sizeof(struct Node*));
+    for (int i = 0; i <= n; i++) {
+        adj[i] = NULL;
+        visited[i] = 0;
+    }
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        // Undirected edges
+        addEdge(adj, u, v);
+        addEdge(adj, v, u);
+    }
+
+    int componentCount = 0;
+    for (int i = 1; i <= n; i++) {
+        if (!visited[i]) {
+            // New unvisited node found means a new component
+            componentCount++;
+            DFS(adj, i);
+        }
+    }
+
+    printf("%d\n", componentCount);
+
+    return 0;
+}
