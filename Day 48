@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Binary Tree Node Structure
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// Helper function to create a new node
+struct Node* newNode(int val) {
+    if (val == -1) return NULL;
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Function to count leaf nodes
+int countLeafNodes(struct Node* root) {
+    // 1. If tree is empty
+    if (root == NULL) {
+        return 0;
+    }
+    
+    // 2. If it's a leaf node
+    if (root->left == NULL && root->right == NULL) {
+        return 1;
+    }
+    
+    // 3. If it's an internal node, sum leaves of children
+    return countLeafNodes(root->left) + countLeafNodes(root->right);
+}
+
+int main() {
+    int n;
+    // Input number of elements in level-order traversal
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    // Standard Level-Order Construction using a Queue
+    struct Node** queue = (struct Node**)malloc(n * sizeof(struct Node*));
+    int front = 0, rear = 0;
+
+    struct Node* root = newNode(arr[0]);
+    if (root) queue[rear++] = root;
+
+    int i = 1;
+    while (i < n && front < rear) {
+        struct Node* parent = queue[front++];
+
+        // Left Child
+        if (i < n) {
+            parent->left = newNode(arr[i++]);
+            if (parent->left) queue[rear++] = parent->left;
+        }
+
+        // Right Child
+        if (i < n) {
+            parent->right = newNode(arr[i++]);
+            if (parent->right) queue[rear++] = parent->right;
+        }
+    }
+
+    // Output the count of leaf nodes
+    printf("%d\n", countLeafNodes(root));
+
+    // Cleanup
+    free(arr);
+    free(queue);
+    return 0;
+}
