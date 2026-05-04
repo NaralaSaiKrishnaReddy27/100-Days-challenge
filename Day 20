@@ -1,0 +1,34 @@
+#include <stdio.h>
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1) return 0;
+
+    int arr[n];
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    int zero_sum_count = 0;
+    long long current_prefix_sum = 0;
+
+    /* 
+       To solve this in C without complex hash maps, we can use 
+       nested loops for moderate n, or track prefix sums.
+       For the general case, we check all subarrays:
+    */
+    for (int i = 0; i < n; i++) {
+        long long current_sum = 0;
+        for (int j = i; j < n; j++) {
+            current_sum += arr[j];
+            
+            if (current_sum == 0) {
+                zero_sum_count++;
+            }
+        }
+    }
+
+    printf("%d\n", zero_sum_count);
+
+    return 0;
+}
