@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the Node structure
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Helper function to create a new node
+struct Node* createNode(int val) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = val;
+    newNode->next = NULL;
+    return newNode;
+}
+
+int main() {
+    int n, k;
+
+    // Read list size
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    struct Node *head = NULL, *tail = NULL;
+    for (int i = 0; i < n; i++) {
+        int val;
+        scanf("%d", &val);
+        struct Node* newNode = createNode(val);
+        if (head == NULL) {
+            head = newNode;
+            tail = head;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+
+    // Read rotation count
+    scanf("%d", &k);
+    k = k % n; // Handle cases where k >= n
+
+    if (k > 0) {
+        // Step 1: Connect tail to head to make it circular
+        tail->next = head;
+
+        // Step 2: Find the new tail
+        // The new tail is at position (n - k) from the start
+        struct Node* newTail = head;
+        for (int i = 1; i < n - k; i++) {
+            newTail = newTail->next;
+        }
+
+        // Step 3: Break the circle
+        head = newTail->next; // New head is the node after the new tail
+        newTail->next = NULL;
+    }
+
+    // Print the rotated list
+    struct Node* current = head;
+    while (current != NULL) {
+        printf("%d%s", current->data, (current->next == NULL) ? "" : " ");
+        current = current->next;
+    }
+    printf("\n");
+
+    return 0;
+}
