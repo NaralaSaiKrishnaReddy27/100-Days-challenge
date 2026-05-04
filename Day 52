@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// Standard Tree Helper
+struct Node* newNode(int val) {
+    if (val == -1) return NULL;
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Function to find LCA in a General Binary Tree
+struct Node* findLCA(struct Node* root, int p, int q) {
+    if (root == NULL) return NULL;
+
+    // If current node matches p or q, it's a potential ancestor
+    if (root->data == p || root->data == q) return root;
+
+    struct Node* leftLCA = findLCA(root->left, p, q);
+    struct Node* rightLCA = findLCA(root->right, p, q);
+
+    // If nodes are found in different subtrees, this is the LCA
+    if (leftLCA && rightLCA) return root;
+
+    // Otherwise, return whichever side found a node
+    return (leftLCA != NULL) ? leftLCA : rightLCA;
+}
+
+int main() {
+    int n, p, q;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+    scanf("%d %d", &p, &q);
+
+    // Build tree from Level-Order input
+    struct Node** queue = (struct Node**)malloc(n * sizeof(struct Node*));
+    int front = 0, rear = 0;
+    struct Node* root = newNode(arr[0]);
+    if (root) queue[rear++] = root;
+
+    int i = 1;
+    while (i < n && front < rear) {
+        struct Node* parent = queue[front++];
+        parent->left = newNode(arr[i++]);
+        if (parent->left) queue[rear++] = parent->left;
+        if (i < n) {
+            parent->right = newNode(arr[i++]);
+            if (parent->right) queue[rear++] = parent->right;
+        }
+    }
+
+    struct Node* lca = findLCA(root, p, q);
+    if (lca) printf("%d\n", lca->data);
+
+    return 0;
+}
