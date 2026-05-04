@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n, m, isDirected;
+    
+    // 1. Input number of vertices and edges
+    if (scanf("%d %d", &n, &m) != 2) return 0;
+
+    // 2. Decide if the graph is Directed (1) or Undirected (0)
+    // For this example, let's assume Undirected, but we can make it dynamic
+    isDirected = 0; 
+
+    // 3. Initialize Adjacency Matrix with 0s
+    // Using calloc to ensure all elements are zeroed out
+    int **adjMatrix = (int **)calloc(n, sizeof(int *));
+    for (int i = 0; i < n; i++) {
+        adjMatrix[i] = (int *)calloc(n, sizeof(int));
+    }
+
+    // 4. Input m edges
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        
+        // Basic bounds checking
+        if (u >= 0 && u < n && v >= 0 && v < n) {
+            adjMatrix[u][v] = 1;
+            if (!isDirected) {
+                adjMatrix[v][u] = 1; // Symmetric for Undirected
+            }
+        }
+    }
+
+    // 5. Output the Adjacency Matrix
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            printf("%d%s", adjMatrix[i][j], (j == n - 1) ? "" : " ");
+        }
+        printf("\n");
+    }
+
+    // Free memory
+    for (int i = 0; i < n; i++) free(adjMatrix[i]);
+    free(adjMatrix);
+
+    return 0;
+}
