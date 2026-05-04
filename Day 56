@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+struct Node* newNode(int val) {
+    if (val == -1) return NULL;
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Recursive function to check if two trees are mirror images
+int isMirror(struct Node* t1, struct Node* t2) {
+    // Both are empty
+    if (t1 == NULL && t2 == NULL) return 1;
+    
+    // Only one is empty or values don't match
+    if (t1 == NULL || t2 == NULL) return 0;
+    if (t1->data != t2->data) return 0;
+
+    // Check if left of t1 is mirror of right of t2 
+    // AND right of t1 is mirror of left of t2
+    return isMirror(t1->left, t2->right) && isMirror(t1->right, t2->left);
+}
+
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    int *arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+
+    // Build the tree using level-order BFS
+    struct Node** q = (struct Node**)malloc(n * sizeof(struct Node*));
+    int f = 0, r = 0;
+    struct Node* root = newNode(arr[0]);
+    if (root) q[r++] = root;
+
+    int i = 1;
+    while (i < n && f < r) {
+        struct Node* curr = q[f++];
+        if (i < n) {
+            curr->left = newNode(arr[i++]);
+            if (curr->left) q[r++] = curr->left;
+        }
+        if (i < n) {
+            curr->right = newNode(arr[i++]);
+            if (curr->right) q[r++] = curr->right;
+        }
+    }
+
+    // A tree is symmetric if the left and right subtrees are mirrors
+    if (root == NULL || isMirror(root->left, root->right)) {
+        printf("YES\n");
+    } else {
+        printf("NO\n");
+    }
+
+    return 0;
+}
