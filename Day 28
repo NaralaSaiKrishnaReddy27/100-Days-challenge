@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define Node structure
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Function to create a new node
+struct Node* createNode(int val) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = val;
+    newNode->next = NULL;
+    return newNode;
+}
+
+int main() {
+    int n, val;
+    struct Node *head = NULL, *tail = NULL;
+
+    // Read the number of elements
+    if (scanf("%d", &n) != 1 || n <= 0) return 0;
+
+    // Create the circular linked list
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &val);
+        struct Node* newNode = createNode(val);
+
+        if (head == NULL) {
+            head = newNode;
+            newNode->next = head; // Point to itself to maintain circular property
+            tail = newNode;
+        } else {
+            tail->next = newNode;
+            newNode->next = head; // Complete the circle
+            tail = newNode;       // Update tail to the new node
+        }
+    }
+
+    // Traversal logic
+    if (head != NULL) {
+        struct Node* temp = head;
+        // Use a do-while loop to ensure the head is processed 
+        // before checking the condition
+        do {
+            printf("%d%s", temp->data, (temp->next == head) ? "" : " ");
+            temp = temp->next;
+        } while (temp != head);
+        printf("\n");
+    }
+
+    // Free memory (requires careful handling to avoid infinite loops)
+    if (head != NULL) {
+        struct Node* current = head;
+        struct Node* nextNode;
+        for (int i = 0; i < n; i++) {
+            nextNode = current->next;
+            free(current);
+            current = nextNode;
+        }
+    }
+
+    return 0;
+}
