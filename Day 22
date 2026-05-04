@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the Node structure
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+int main() {
+    int n, value;
+    struct Node *head = NULL, *temp = NULL;
+
+    // Read the number of elements
+    if (scanf("%d", &n) != 1) return 0;
+
+    // Create the Linked List
+    for (int i = 0; i < n; i++) {
+        struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+        scanf("%d", &value);
+        newNode->data = value;
+        newNode->next = NULL;
+
+        if (head == NULL) {
+            head = newNode;
+            temp = head;
+        } else {
+            temp->next = newNode;
+            temp = temp->next;
+        }
+    }
+
+    // logic to Count Nodes
+    int count = 0;
+    struct Node* current = head;
+    while (current != NULL) {
+        count++;
+        current = current->next;
+    }
+
+    // Output the count
+    printf("%d\n", count);
+
+    // Free memory
+    current = head;
+    while (current != NULL) {
+        struct Node* nextNode = current->next;
+        free(current);
+        current = nextNode;
+    }
+
+    return 0;
+}
